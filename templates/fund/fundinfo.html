@@ -1,0 +1,13 @@
+<table class="table-bordered">
+    <tr>
+        <th>基金编号</th><th>基金名称</th><th>基金类型</th><th>基金成立日</th><th>基金到期日</th><th>通道机构</th>
+        <th>托管人</th><th>产品类型</th><th>份额</th><th>净值乘数</th><th>净值加数</th><th>基金经理</th><th>业务组</th>
+        <th>优先级</th><th>排序编号</th><th>子基金占比</th><th>申赎分割比例</th><th>临时申赎分割比例</th><th>今年分红</th>
+    </tr>
+    <tr>
+        <th>{{ fund.id }}</th><th>{{ fund.name }}</th><th>{{ fund.fundtype }}</th><th>{{ fund.dateinception }}</th><th>{{ fund.datedue }}</th><th>{{ fund.channel }}</th>
+        <th>{{ fund.custodian }}</th><th>{{ fund.producttype }}</th><th>{{ fund.share }}</th><th>{{ fund.nvmultipleier }}</th><th>{{ fund.nvplus }}</th><th>{{ fund.manager }}</th>
+        <th>{{ fund.team }}</th><th>{{ fund.priority }}</th><th>{{ fund.sortindex }}</th><th>{{ fund.splitratio }}</th><th>{{ fund.splitratio_pr }}</th><th>{{ fund.splitration_temp }}</th>
+        <th>{{ fund.bounusthisyear }}</th>
+    </tr>
+</table>

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+    <link type="text/css" href="{% static "fund/css/fund.css" %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script type="text/javascript" src="{% static "fund/js/fund.js" %}" rel="script"></script>
+{% endblock %}
+{% block page-header %}
+    基金每日交易情况更新
+{% endblock %}
+{% block page-content %}
+    <div class="container">
+    <div class="row">
+        {% csrf_token %}
+        <input type="hidden" id="filelist" name="filelist">
+        <div class="row" id="uploadfield">
+            <table class="table table-hover filediv" id="filediv">
+                <tbody>
+
+                </tbody>
+            </table>
+            <div class="row">
+                <div class="col-md-3">
+                    <a href="javascript:" style="display:inline-block; width:100px;padding:5px; background:#007dce; position:relative; overflow:hidden;color:white;text-align:center;border-radius:4px;">
+                       <input style="cursor:pointer;position:absolute; right:0; top:0; font-size:100px; opacity:0;" type="file" id="file" name="file"  onchange="upload()" multiple="multiple" />
+                       选择文件
+                    </a>
+                    <span style="padding:5px;color: red;" id="scts">未选择文件</span>
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-default" id="submit" disabled="disabled" onclick="sub()">
+                        <span class="glyphicon glyphicon-upload"></span>
+                    </button>
+                </div>
+        </div>
+        </div>
+        <div class="" id="ret" style="display:none"></div>
+    </div>
+    </div>
+
+{% endblock %}

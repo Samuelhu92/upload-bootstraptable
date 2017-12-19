@@ -1,0 +1,484 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+    <link type="text/css" href="{% static "fund/css/bootstrap-treeview.css" %}" rel="stylesheet">
+    <link type="text/css" href="{% static "fund/css/bootstrap-table.css" %}" rel="stylesheet">
+{% endblock %}
+{% block script %}
+    <script type="text/javascript" src="{% static "fund/js/bootstrap-table.js" %}" rel="script"></script>
+    <script type="text/javascript" src="{% static "fund/js/bootstrap-treeview.js" %}" rel="script"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            var isInitialized=false;
+            $.ajaxSetup({
+                data:{csrfmiddlewaretoken:'{{ csrf_token }}'}
+            });
+
+{#            var tree = $.getJSON("{% url 'fund_tree' %}",'',function#}
+{#                (data){#}
+{#                    $('#tree').treeview(#}
+{#                        {#}
+{#                        data:data,#}
+{#                        level:2,#}
+{#                        showTags:true,#}
+{#                        onNodeExpanded:function(event,node){#}
+{#                            for (var i=0 ; i<= len(node.nodes); i++){#}
+{#                                $.post("../fund/"+node[i].id,{},function(data){#}
+{#                                    console.log(data);#}
+{##}
+{#                                    $("#result").html(data);#}
+{#                                })#}
+{#                            }#}
+{#                        }#}
+{#                    }#}
+{#                    )#}
+{#                $('#tree').treeview("collapseAll", { silent: true });#}
+{##}
+{#        });#}
+            var oTableInit = function () {
+                var oTableInit = new Object();
+                oTableInit.Init = function () {
+                    $("#table").bootstrapTable('destroy');
+                    $("#table").bootstrapTable({
+                        url: '{% url 'fund_parent' %}',
+                        method: 'post',
+                        striped: true, //是否显示行间隔色
+                        sortable: true, //是否启用排序
+                        sortOrder: "asc",  //排序方式
+                        dataType: "json",
+                        toolbar: "#toolbar",
+                        showRefresh:true,
+                        showToggle:true,
+                        ajaxOptions:{
+                             xhrFields: {
+                                withCredentials: true
+                            }
+                        },
+                        pagination: true,    // 显示页码等信息
+                        showColumns: true,  // 选择显示的列
+                        clickToSelect: true, //在点击行时，自动选择rediobox 和 checkbox
+                        pageNumber: 1,         //首页页码
+                        pageSize: 1,           // 当前分页值
+                        pageList: [1, 2],  // 分页选页
+                        detailView: true,//父子表
+                        queryParams: queryParams,//传递参数（*）
+                        queryParamsType:'',
+                        sidePagination: 'server',   // //分页方式：client 客户端分页，server 服务端分页
+                        cache: false, // 不缓存
+                        onExpandRow: onExpandRow,
+                        //responseHandler: responseHandler,
+                        columns:[
+                            {
+                                checkbox: true
+                            },
+                            {
+                                title: '编号',
+                                field: 'id',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '基金编号',
+                                field: 'fundid',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '基金名称',
+                                field: 'name',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '基金类型',
+                                field: 'fundtype',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '基金成立日',
+                                field: 'dateinception',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '基金到期日',
+                                field: 'datedue',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title:'子基金编号',
+                                field:'childfund',
+                                align:'center',
+                                sortable:true
+                            },
+                            {
+                                title: '通道机构',
+                                field: 'channel',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '托管人',
+                                field: 'custodian',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '产品类型',
+                                field: 'producttype',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '份额',
+                                field: 'share',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '净值乘数',
+                                field: 'nvmulitiplier',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '净值加数',
+                                field: 'nvplus',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '基金经理',
+                                field: 'manager',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '业务组',
+                                field: 'taem',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '优先级',
+                                field: 'priority',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '排序编号',
+                                field: 'sortindex',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '子基金占比',
+                                field: 'splitratio',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '申赎分割比例',
+                                field: 'splitration_pr',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '临时申赎比例',
+                                field: 'splitration_temp',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '今年分红',
+                                field: 'bonusthisyear',
+                                align: 'center',
+                                sortable:true
+                            }
+                        ]
+                    });
+                };
+                return oTableInit;
+            };
+            //初始化Table
+            var oTable = new oTableInit();
+            oTable.Init();
+            //点击查询
+            $('.dropdown-toggle').dropdown();
+            //得到查询的参数 模糊查询条件参数
+            function queryParams(params){
+                return {
+                    pageSize: params.pageSize, //页面大小
+                    pageNo: params.pageNumber, //页码
+                    Name:$("#search-name").val(),
+                    id:$("#search-id").val()
+                };
+            }
+            function search(){
+                if ($("#search-name").val()===''&& $("search-id").val()===''){
+                    alert("请输入搜索内容")
+                }
+                else {
+                    var newTable = oTableInit();
+                    newTable.init();
+                    $(".search-name").val("");
+                    $(".search-id").val("");
+                }
+            }
+            //父子表
+            function onExpandRow(index,row,$detail) {
+                console.log(row.childfund!=='');
+                if (row.childfund!=='') {
+                    InitSubTable(index, row, $detail);
+                    $('.detail-view .dropdown-toggle').dropdown();
+                }
+                else{
+                    $detail.parent().remove();
+                }
+            }
+            InitSubTable = function (index,row,$detail) {
+                var cur_table = $detail.html('<table></table>').find('table');
+                var parentid = row.id;
+                $(cur_table).bootstrapTable({
+                    url: '../child/'+parentid,
+                    method: 'post',
+                    striped: true, //是否显示行间隔色
+                    sortable: true, //是否启用排序
+                    sortOrder: "asc",
+                    dataType: "json",
+                    showHeader:false,
+                    ajaxOptions:{
+                        xhrFields: {
+                            withCredentials: true
+                            }
+                    },
+                    pagination: true,    // 显示页码等信息
+                    showColumns: true,  // 选择显示的列
+                    clickToSelect: true, //在点击行时，自动选择rediobox 和 checkbox
+                    pageNumber: 1,         //首页页码
+                    pageSize: 1,           // 当前分页值
+                    pageList: [1, 2],  // 分页选页
+                    detailView: true,//父子表
+                    queryParams: queryParams,//传递参数（*）
+                    queryParamsType:'',
+                    sidePagination: 'server',   // //分页方式：client 客户端分页，server 服务端分页
+                    cache: false, // 不缓存
+                    onExpandRow: onExpandRow,
+                    buttonsAlign:'left',
+                    //responseHandler: responseHandlerchild,
+                    columns:[
+                            {
+                                checkbox: true
+                            },
+                            {
+                                title: '编号',
+                                field: 'id',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '基金编号',
+                                field: 'fundid',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '基金名称',
+                                field: 'name',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '基金类型',
+                                field: 'fundtype',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '基金成立日',
+                                field: 'dateinception',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '基金到期日',
+                                field: 'datedue',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title:'子基金编号',
+                                field:'childfund',
+                                align:'center',
+                                sortable:true
+                            },
+                            {
+                                title: '通道机构',
+                                field: 'channel',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '托管人',
+                                field: 'custodian',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '产品类型',
+                                field: 'producttype',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '份额',
+                                field: 'share',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '净值乘数',
+                                field: 'nvmulitiplier',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '净值加数',
+                                field: 'nvplus',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '基金经理',
+                                field: 'manager',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '业务组',
+                                field: 'taem',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '优先级',
+                                field: 'priority',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '排序编号',
+                                field: 'sortindex',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '子基金占比',
+                                field: 'splitratio',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '申赎分割比例',
+                                field: 'splitration_pr',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '临时申赎比例',
+                                field: 'splitration_temp',
+                                align: 'center',
+                                sortable:true
+                            },
+                            {
+                                title: '今年分红',
+                                field: 'bonusthisyear',
+                                align: 'center',
+                                sortable:true
+                            }
+                        ]
+                });
+
+            };
+{#             function responseHandler(sourceData) {#}
+{#             if (sourceData.code === "200") {#}
+{#                 var pageData = sourceData.prepareIncvoiceOut.prepareIncvoiceOutArray;#}
+{#                 return {#}
+{#                     "total": sourceData.prepareIncvoiceOut.totalList, //总条数#}
+{#                     "rows": pageData //返回的数据格式#}
+{#                 };#}
+{#             } else {#}
+{#                 return {#}
+{#                     "total": 0,#}
+{#                     "rows": []#}
+{#                 };#}
+{#             }#}
+{#         }#}
+{#        function responseHandlerchild(sourceData) {#}
+{#            if (sourceData.code === "200") {#}
+{#                var pageData = sourceData.list;#}
+{#                return {#}
+{#                    "total": sourceData.prepareIncvoiceOut.totalList, //总条数#}
+{#                    "rows": pageData //返回的数据格式#}
+{#                };#}
+{#            } else {#}
+{#                return {#}
+{#                    "total": 0,#}
+{#                    "rows": []#}
+{#                };#}
+{#            }#}
+{#        }#}
+
+        });
+        $(document).ready(function () {
+            $('.search').keyup(function () {
+                var searchTerm = String($('.search').val());
+                console.log(searchTerm);
+                var listItem = $('.table tbody').children('tr');
+                var searchSplit = searchTerm.replace(/ /g, "'):containsi('");
+                console.log(searchSplit);
+                $.expr[':'].containsi = $.expr.createPseudo(function(match){
+                    return (function(elem){
+                    console.log(match);
+                    return (elem.textContent || elem.innerText || '').toLowerCase().indexOf((match || "").toLowerCase()) >= 0;
+                });
+                });
+                $(".table tbody tr").not(":containsi('" + searchSplit + "')").each(function(e){
+                    $(this).attr('style','display:none');
+                });
+                $(".table tbody tr:containsi('" + searchSplit + "')").each(function(e){
+                    $(this).attr('style','display:table-row');
+                });
+            });
+        })
+    </script>
+{% endblock %}
+{% block page-header %}
+基金信息表
+{% endblock %}
+{% block page-content %}
+    <hr>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3 col-md-12 col-lg-12">
+                <div class="form-group pull-left">
+                    <input type="text" class="search form-control" placeholder="请输入关键词">
+                    <input type="text" class="search-name " placeholder="请输入查找基金名称"/>
+                    <input type="text" class="search-id" placeholder="请输入查找基金id"/>
+                    <button type="button" class="glyphicon glyphicon-search" value="sumbit" name="search-submit" onclick="search()"></button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-11 col-lg-11">
+                <table id="table" class="table table-hover" data-detail-view="true">
+
+                </table>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
